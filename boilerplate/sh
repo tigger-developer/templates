@@ -1,18 +1,65 @@
-#!/usr/bin/env bash
+#usr/bin/env bash
 ### ABOUTME: See help text
-set -euo pipefail
+set -eo pipefail
 
-helptext="USAGE:     ${0##*/} ARG [ARG]
-WTF:       ABOUTME
-WHERE:     Conditions
-DEFAULT:   Values
+#shellcheck source=../.qfuncs.sh
+. ~/.qfuncs.sh
+
+helptext="USAGE:     ${0##*/} [--dry-run] [cloned_git_repos]
+WTF:       Migrate git repo to new handle 2026-05-23
 "
+
+parse_args() {
+   args=()
+   dry_run=false
+
+   while [ $# -gt 0 ]; do
+      case "$1" in
+      -h | --help)
+         echo "$helptext" >&2
+         exit
+         ;;
+      --dry-run)
+         dry_run=true
+         ;;
+      *)
+         args+=("$1")
+         ;;
+      esac
+      shift
+   done
+}
 
 # shopt -s dotglob lastpipe  # add if as required
 
 # functions go here
-some_func(){
+fix_files_for_dir() {
    declare -p FUNCNAME
+
+   (
+      cd "$1" || die
+      hline "$PWD"
+
+      check=(.git/config .gitmodules)
+
+      for file in "${check[@]}"; do
+         info "$PWD/$file"
+
+         if ! [ -r "$file" ]; then
+            warn "$file not found"
+            continue
+         fi
+
+         fixed=$(mktemp)
+         sed 's/tigger04/tadg-paul/g' "$file" >"$fixed"
+         if $dry_run; then
+            diff "$file" "$fixed"
+            echo mv -vf "$fixed" "$file"
+         else
+            mv -vf "$fixed" "$file"
+         fi
+      done
+   )
 }
 
 # Detect whether this file is being sourced or executed.
@@ -23,15 +70,14 @@ else
 fi
 
 _main() {
-   some_func
+   for arg in "${args[@]}"; do
+      fix_files_for_dir "$arg"
+   done
 }
 
 if ! $_sourced; then
-   if [[ ${1:-} =~ ^--?h(elp)?$ ]]; then
-      echo "$helptext" >&2
-      exit
-   fi
-   _main "$@"
+   parse_args "$@"
+   _main "${args[@]}"
 fi
 
 unset _sourced
