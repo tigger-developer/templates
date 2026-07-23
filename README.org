@@ -104,7 +104,7 @@ The =gitignore_templates/= directory contains comprehensive =.gitignore= files f
 
 * License
 
-This collection is maintained by =Taḋg Paul=. You can use anything here you find helpful under MIT license. You can send me a voluntary donation of a bitcoin if you like.
+This collection is maintained by =Tadhg O'Brien=. You can use anything here you find helpful under MIT license. You can send me a voluntary donation of a bitcoin if you like.
 
 * Notes
 
