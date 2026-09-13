@@ -1,4 +1,4 @@
-#usr/bin/env bash
+#!/usr/bin/env bash
 helptext="USAGE:     ${0##*/} FILE.md [FILE2.md ...]
 WTF:       Converts markdown file(s) to temporary html and opens it for reading.
 "
